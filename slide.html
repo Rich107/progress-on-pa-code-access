@@ -360,7 +360,7 @@
     }
     .steps{
       display:flex;
-      flex-wrap:wrap;
+      flex-wrap:nowrap;
       gap:8px;
       align-items:center;
     }
@@ -418,6 +418,24 @@
       max-width: 100%;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0,0,0,.15);
+    }
+
+    /* AWS crossed out animation */
+    .aws-graphic{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .cross-line{
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      transition: stroke-dashoffset 0.6s ease;
+    }
+    .cross-line-2{
+      transition-delay: 0.3s;
+    }
+    .slide.visible .cross-line{
+      stroke-dashoffset: 0;
     }
 
     /* Avatars section */
@@ -650,31 +668,39 @@
         <div class="kicker">
           <span class="badge">Area 4</span>
         </div>
-        <h2>Infrastructure</h2>
-        <div class="subtitle">Platform foundations, scale, and connectivity strategy.</div>
+        <div class="card-layout">
+          <div class="card-content">
+            <h2>Infrastructure</h2>
+            <div class="subtitle">Platform foundations, scale, and connectivity strategy.</div>
 
-        <div class="section">
-          <div class="label">Includes</div>
-          <ul>
-            <li>AWS foundations</li>
-            <li>Server reduction strategy</li>
-            <li>Lobby</li>
-            <li>Friends list</li>
-            <li>How we move to P2P</li>
-          </ul>
+            <div class="section">
+              <div class="label">Includes</div>
+              <ul>
+                <li>AWS foundations</li>
+                <li>Server reduction strategy</li>
+                <li>Lobby</li>
+                <li>Friends list</li>
+                <li>How we move to P2P</li>
+              </ul>
+            </div>
 
-          <div class="logos move-me" style="margin-top:16px;">
-            <div class="logo" title="AWS">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path fill="#e2e8f0" d="M6 18h12v2H6zM7 6h2l3 10h-2l-.6-2H8.6L8 16H6l1-10Zm1.9 6h1.9L9.8 8.7 8.9 12ZM16 6h2l-1.1 10h-2L16 6Zm-2.6 0h2l-.2 2h-1.8z"/>
-              </svg>
-              <span>AWS</span>
+            <div class="note">
+              <strong>Long-term goal:</strong> Reduce reliance on AWS and move towards P2P infrastructure.
             </div>
           </div>
-        </div>
-
-        <div class="note">
-          <strong>Does not require</strong> an engine/Steam release to deploy changes.
+          <div class="card-image aws-graphic">
+            <svg viewBox="0 0 100 60" width="200" height="120" aria-hidden="true">
+              <!-- AWS text logo -->
+              <text x="50" y="32" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="28" fill="#e2e8f0" opacity="0.5">AWS</text>
+              <!-- AWS smile/arrow -->
+              <path d="M20 42 Q50 52 80 42" stroke="#ff9900" stroke-width="4" fill="none" opacity="0.5"/>
+              <path d="M72 38 L80 42 L74 48" stroke="#ff9900" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+              <!-- Red X cross - animated -->
+              <line class="cross-line cross-line-1" x1="15" y1="10" x2="85" y2="50" stroke="#ef4444" stroke-width="6" stroke-linecap="round"/>
+              <line class="cross-line cross-line-2" x1="85" y1="10" x2="15" y2="50" stroke="#ef4444" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+            <span style="color: var(--muted); font-size: 14px; margin-top: 12px; display: block; text-align: center;">Moving away from AWS</span>
+          </div>
         </div>
       </article>
     </div>
