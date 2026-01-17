@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>High-level Components – Separation of Concerns</title>
+  <style>
+    :root{
+      --bg1:#eaf2ff;
+      --bg2:#f7fbff;
+      --ink:#0f172a;
+      --muted:#475569;
+      --line:#cbd5e1;
+      --card:#ffffffcc;
+      --shadow: 0 10px 30px rgba(2,6,23,.10);
+      --radius:18px;
+
+      --c-source:#2563eb;
+      --c-server:#0ea5e9;
+      --c-engine:#7c3aed;
+      --c-infra:#16a34a;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 600px at 20% 10%, var(--bg1), transparent 60%),
+        radial-gradient(1200px 600px at 80% 0%, #e0f2fe, transparent 55%),
+        linear-gradient(180deg, var(--bg2), #ffffff);
+      min-height:100vh;
+      padding:32px 18px 40px;
+    }
+
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    header{
+      text-align:center;
+      margin-bottom:18px;
+    }
+    header h1{
+      margin:0;
+      font-size: clamp(22px, 3.2vw, 36px);
+      letter-spacing:-0.02em;
+    }
+    header p{
+      margin:8px auto 0;
+      max-width:70ch;
+      color:var(--muted);
+      line-height:1.35;
+    }
+
+    /* Grid */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(220px, 1fr));
+      gap:16px;
+      align-items:stretch;
+      margin-top:20px;
+    }
+    @media (max-width: 1040px){
+      .grid{ grid-template-columns: repeat(2, minmax(240px, 1fr)); }
+    }
+    @media (max-width: 560px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background:var(--card);
+      backdrop-filter: blur(6px);
+      border:1px solid rgba(203,213,225,.7);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:16px 16px 14px;
+      position:relative;
+      overflow:hidden;
+      min-height: 420px;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px -2px auto -2px;
+      height:6px;
+      background: var(--accent);
+      border-radius: 16px 16px 0 0;
+      opacity:.95;
+    }
+
+    .kicker{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      margin-bottom:8px;
+    }
+    .badge{
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      background: color-mix(in srgb, var(--accent) 12%, white);
+      border:1px solid color-mix(in srgb, var(--accent) 25%, white);
+      color: color-mix(in srgb, var(--accent) 75%, #0b1220);
+      font-weight:600;
+      letter-spacing:.02em;
+      white-space:nowrap;
+    }
+
+    h2{
+      margin:0;
+      font-size:20px;
+      letter-spacing:-0.01em;
+      line-height:1.15;
+    }
+    .subtitle{
+      margin:6px 0 10px;
+      color:var(--muted);
+      line-height:1.35;
+      font-size:14px;
+    }
+
+    .section{
+      margin-top:12px;
+      border-top:1px dashed rgba(148,163,184,.65);
+      padding-top:12px;
+    }
+
+    .label{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted);
+      margin:0 0 8px;
+      font-weight:700;
+    }
+
+    ul{
+      margin:0;
+      padding-left:18px;
+      color:var(--ink);
+      line-height:1.5;
+      font-size:14px;
+    }
+    li{ margin:6px 0; }
+
+    /* Logo placeholders (swap with real SVG/img later) */
+    .logos{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+      align-items:center;
+    }
+    .logo{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border:1px solid rgba(203,213,225,.9);
+      border-radius:14px;
+      background:#fff;
+      font-size:13px;
+      color:var(--muted);
+      user-select:none;
+    }
+    .logo svg{
+      width:18px; height:18px;
+      display:block;
+    }
+
+    /* Flow area to emphasize separation */
+    .flows{
+      margin-top:18px;
+      background: rgba(255,255,255,.7);
+      border:1px solid rgba(203,213,225,.85);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:14px;
+    }
+    .flows h3{
+      margin:0 0 10px;
+      font-size:15px;
+      letter-spacing:-0.01em;
+    }
+
+    .flow-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 740px){
+      .flow-grid{ grid-template-columns: 1fr; }
+    }
+
+    .flow{
+      border:1px solid rgba(203,213,225,.9);
+      border-radius:16px;
+      padding:12px;
+      background:#fff;
+    }
+    .flow .flow-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .pill{
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      background:#f1f5f9;
+      border:1px solid rgba(203,213,225,.9);
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .steps{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+    .step{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:14px;
+      border:1px solid rgba(203,213,225,.9);
+      background: color-mix(in srgb, var(--accent) 8%, white);
+      color:var(--ink);
+      font-size:13px;
+    }
+    .arrow{
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    /* Per-card accents */
+    .source{ --accent: var(--c-source); }
+    .server{ --accent: var(--c-server); }
+    .engine{ --accent: var(--c-engine); }
+    .infra{  --accent: var(--c-infra);  }
+
+    /* Small helper for “does not require Steam release” */
+    .note{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      background: #fff;
+      border:1px solid rgba(203,213,225,.9);
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .note strong{ color:var(--ink); }
+
+    /* Make it easy to reposition items */
+    .move-me{ outline: 2px dashed transparent; }
+    .move-me:focus-within{ outline-color: rgba(100,116,139,.5); }
+
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Understand the different high-level components</h1>
+      <p>
+        Four Areas. Clean boundaries. Fewer “wait, where does this live?” moments.
+      </p>
+    </header>
+
+    <section class="grid" aria-label="High-level component Areas">
+
+      <!-- Source / CI / Deployments -->
+      <article class="card source">
+        <div class="kicker">
+          <span class="badge">Area 1</span>
+          <div>
+            <h2>Source, CI &amp; Deployments</h2>
+            <div class="subtitle">Where code lives and how it ships (for non-engine parts).</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="label">Includes</div>
+          <ul>
+            <li>Source control</li>
+            <li>CI pipelines &amp; build automation</li>
+            <li>Deployment workflows for services/infrastructure</li>
+          </ul>
+
+          <div class="logos move-me" style="margin-top:12px;">
+            <div class="logo" title="GitHub">
+              <!-- Simple Octocat-ish placeholder (no glasses) -->
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#111827" d="M12 2a10 10 0 0 0-3.16 19.48c.5.1.68-.22.68-.48v-1.7c-2.77.6-3.36-1.17-3.36-1.17-.45-1.15-1.1-1.46-1.1-1.46-.9-.62.07-.6.07-.6 1 .07 1.52 1.03 1.52 1.03.9 1.52 2.35 1.08 2.92.83.1-.65.35-1.08.63-1.33-2.21-.25-4.54-1.1-4.54-4.9 0-1.08.39-1.96 1.03-2.65-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.01A9.6 9.6 0 0 1 12 6.8c.85 0 1.71.11 2.51.33 1.9-1.28 2.74-1.01 2.74-1.01.56 1.38.21 2.4.1 2.65.64.69 1.03 1.57 1.03 2.65 0 3.81-2.33 4.65-4.55 4.9.36.31.68.92.68 1.86v2.75c0 .26.18.58.69.48A10 10 0 0 0 12 2z"/>
+              </svg>
+              <span>GitHub</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="note">
+          <strong>Key idea:</strong> This Area supports building &amp; deploying services without requiring a game engine release.
+        </div>
+      </article>
+
+      <!-- Server / PA-Net -->
+      <article class="card server">
+        <div class="kicker">
+          <span class="badge">Area 2</span>
+          <div>
+            <h2>Server / PA-Net</h2>
+            <div class="subtitle">Runtime services and online features.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="label">Includes</div>
+          <ul>
+            <li>Hosting</li>
+            <li>Matchmaking (MM) &amp; MMR</li>
+            <li>Replays</li>
+            <li>Auth</li>
+            <li>Other backend services</li>
+          </ul>
+        </div>
+
+        <div class="note">
+          <strong>Does not require</strong> an engine/Steam release to deploy changes.
+        </div>
+      </article>
+
+      <!-- Game Engine -->
+      <article class="card engine">
+        <div class="kicker">
+          <span class="badge">Area 3</span>
+          <div>
+            <h2>Game Engine</h2>
+            <div class="subtitle">Game logic, mechanics, and simulation fidelity.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="label">Includes</div>
+          <ul>
+            <li>Ammunition mechanics</li>
+            <li>Calculations (damage, ballistics, etc.)</li>
+            <li>Models (tuning / balancing / runtime models)</li>
+            <li>Core game logic &amp; mechanics</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="label">Deployment constraint</div>
+          <div class="logos">
+            <div class="logo" title="Steam">
+              <!-- Simple Steam-ish circle -->
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#0f172a" d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm5.2 6.9a2.6 2.6 0 1 1-2.6 2.6 2.6 2.6 0 0 1 2.6-2.6ZM9.2 17.7l-2.1-.9a2.6 2.6 0 0 1-1.7-2.4v-.1l3 1.3a1.9 1.9 0 1 0 .8-1.7l-3-1.3 7.4-3.4a3.6 3.6 0 1 0 1 2.4l-3.1 1.4a2.8 2.8 0 1 1-1.3 3.7Z"/>
+              </svg>
+              <span>Steam Release Required</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Infrastructure -->
+      <article class="card infra">
+        <div class="kicker">
+          <span class="badge">Area 4</span>
+          <div>
+            <h2>Infrastructure</h2>
+            <div class="subtitle">Platform foundations, scale, and connectivity strategy.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="label">Includes</div>
+          <ul>
+            <li>AWS foundations</li>
+            <li>Server reduction strategy</li>
+            <li>Lobby</li>
+            <li>Friends list</li>
+            <li>How we move to P2P</li>
+          </ul>
+
+          <div class="logos move-me" style="margin-top:12px;">
+            <div class="logo" title="AWS">
+              <!-- Simple AWS wordmark-ish placeholder -->
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#0f172a" d="M6 18h12v2H6zM7 6h2l3 10h-2l-.6-2H8.6L8 16H6l1-10Zm1.9 6h1.9L9.8 8.7 8.9 12ZM16 6h2l-1.1 10h-2L16 6Zm-2.6 0h2l-.2 2h-1.8z"/>
+              </svg>
+              <span>AWS</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="note">
+          <strong>Does not require</strong> an engine/Steam release to deploy changes.
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Separation of concerns / deployment gates -->
+    <section class="flows" aria-label="Deployment gates and independence">
+      <h3>Deployment gates &amp; independence</h3>
+      <div class="flow-grid">
+        <div class="flow engine" style="--accent: var(--c-engine);">
+          <div class="flow-title">
+            <strong>Engine deployment path</strong>
+            <span class="pill">Requires Steam</span>
+          </div>
+          <div class="steps">
+            <span class="step">Source (GitHub)</span>
+            <span class="arrow">→</span>
+            <span class="step">Build / Validate</span>
+            <span class="arrow">→</span>
+            <span class="step">Steam Release</span>
+            <span class="arrow">→</span>
+            <span class="step">Players get update</span>
+          </div>
+        </div>
+
+        <div class="flow server" style="--accent: var(--c-server);">
+          <div class="flow-title">
+            <strong>Server / PA-Net + Infra deployment path</strong>
+            <span class="pill">No Steam needed</span>
+          </div>
+          <div class="steps">
+            <span class="step">Source (GitHub)</span>
+            <span class="arrow">→</span>
+            <span class="step">CI / Deploy</span>
+            <span class="arrow">→</span>
+            <span class="step">Services live</span>
+            <span class="arrow">→</span>
+            <span class="step">Players benefit immediately</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
+
