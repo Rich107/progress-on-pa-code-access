@@ -321,6 +321,79 @@
     .philosophy li{
       margin: 6px 0;
     }
+
+    /* Progress slide */
+    .progress-grid{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 24px;
+    }
+    @media (max-width: 700px){
+      .progress-grid{ grid-template-columns: 1fr; }
+    }
+    .progress-column{
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid rgba(71,85,105,.6);
+    }
+    .progress-column.done{
+      background: rgba(74, 222, 128, 0.1);
+      border-color: rgba(74, 222, 128, 0.3);
+    }
+    .progress-column.todo{
+      background: rgba(251, 191, 36, 0.1);
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+    .progress-column h3{
+      margin: 0 0 14px;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .progress-column.done h3{ color: #4ade80; }
+    .progress-column.todo h3{ color: #fbbf24; }
+    .progress-column ul{
+      margin: 0;
+      padding-left: 20px;
+      line-height: 1.7;
+    }
+    .progress-column li{
+      margin: 8px 0;
+    }
+    .tag{
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .tag.non-blocking{
+      background: rgba(148, 163, 184, 0.2);
+      color: #94a3b8;
+    }
+    .this-week{
+      margin-top: 24px;
+      padding: 20px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 14px;
+    }
+    .this-week h4{
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: #3b82f6;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .this-week p{
+      margin: 0;
+      color: var(--ink);
+      line-height: 1.5;
+    }
     .flows h3{
       margin:0 0 10px;
       font-size:15px;
@@ -873,6 +946,42 @@
           <div class="card-image">
             <img src="code change.png" alt="Code change diff" class="meme-img">
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 9: Progress -->
+  <section class="slide">
+    <div class="wrap">
+      <div class="full-card" style="--accent: var(--c-infra);">
+        <div class="kicker">
+          <span class="badge" style="--accent: var(--c-infra);">Progress Update</span>
+        </div>
+        <h2>Where We Are</h2>
+
+        <div class="progress-grid">
+          <div class="progress-column done">
+            <h3>Done</h3>
+            <ul>
+              <li>Builds working for <strong>Windows</strong> and <strong>MacOS</strong></li>
+              <li>Steam credentials secured</li>
+              <li>Code in GitHub with LFS support for large files</li>
+            </ul>
+          </div>
+
+          <div class="progress-column todo">
+            <h3>To Do</h3>
+            <ul>
+              <li>Reduce LFS quota usage on GitHub <span class="tag non-blocking">Non-blocking for infrequent releases</span></li>
+              <li>Build for Linux <span class="tag non-blocking">Blocking for full release but not beta</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="this-week">
+          <h4>This Week</h4>
+          <p>Push a small update to Steam to test authentication and confirm we understand all the parts for deployment.</p>
         </div>
       </div>
     </div>
