@@ -394,6 +394,44 @@
       color: var(--ink);
       line-height: 1.5;
     }
+
+    /* Expandable image lightbox */
+    .expandable{
+      cursor: zoom-in;
+      transition: transform 0.2s ease;
+    }
+    .expandable:hover{
+      transform: scale(1.02);
+    }
+    .lightbox{
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      cursor: zoom-out;
+      padding: 40px;
+    }
+    .lightbox.active{
+      opacity: 1;
+      visibility: visible;
+    }
+    .lightbox img{
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+    }
+    .lightbox.active img{
+      transform: scale(1);
+    }
     .flows h3{
       margin:0 0 10px;
       font-size:15px;
@@ -944,12 +982,17 @@
             </div>
           </div>
           <div class="card-image">
-            <img src="code change.png" alt="Code change diff" class="meme-img">
+            <img src="code change.png" alt="Code change diff" class="meme-img expandable" id="code-change-img">
           </div>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- Lightbox overlay -->
+  <div class="lightbox" id="lightbox">
+    <img src="code change.png" alt="Code change diff">
+  </div>
 
   <!-- Slide 9: Progress -->
   <section class="slide">
@@ -1002,6 +1045,24 @@
     }, {
       threshold: 0.3,
       rootMargin: '-10% 0px -10% 0px'
+    });
+
+    // Lightbox for code change image
+    const codeChangeImg = document.getElementById('code-change-img');
+    const lightbox = document.getElementById('lightbox');
+
+    codeChangeImg.addEventListener('click', () => {
+      lightbox.classList.add('active');
+    });
+
+    lightbox.addEventListener('click', () => {
+      lightbox.classList.remove('active');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        lightbox.classList.remove('active');
+      }
     });
 
     slides.forEach(slide => observer.observe(slide));
